@@ -76,7 +76,7 @@ services:
     env_file: .env
     build: ./flask-dashboard
     ports:
-      - "5000:5000"
+      - "4500:4500"
     volumes:
       - ./flask-dashboard:/app
       - ./airflow/scripts/static:/opt/airflow/scripts/static
