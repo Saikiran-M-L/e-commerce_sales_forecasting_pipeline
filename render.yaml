@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: ecommerce-dashboard
+    env: python
+    buildCommand: cd flask-dashboard && pip install -r requirements.txt
+    startCommand: cd flask-dashboard && gunicorn app:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 4500
+      - key: MONGO_URI
+        value: mongodb+srv://Saikiran_ML:tech@cluster0.ay5okke.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0 # Replace this with actual value or configure via Render UI
+    autoDeploy: true
