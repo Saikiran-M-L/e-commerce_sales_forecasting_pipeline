@@ -1,0 +1,10 @@
+pandas
+boto3
+scikit-learn
+joblib
+python-dotenv
+Python-IO
+pymongo
+pymongo[srv]
+prophet
+dnspython

@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+    restart: always
+
+  airflow-webserver:
+    build: ./airflow
+    container_name: airflow-webserver
+    restart: always
+    env_file: .env
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__WEBSERVER__SECRET_KEY=G2ghFhQZICJCVxXHLQs35QvCGnfrzEpFn3gYZKq3T1A
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/scripts:/opt/airflow/dags/scripts
+      - ./data:/opt/airflow/data
+      - ./airflow/scripts:/opt/airflow/scripts 
+      - ./airflow/scripts/static:/opt/airflow/scripts/static
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  airflow-scheduler:
+    build: ./airflow
+    container_name: airflow-scheduler
+    restart: always
+    env_file: .env
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=G2ghFhQZICJCVxXHLQs35QvCGnfrzEpFn3gYZKq3T1A
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/scripts:/opt/airflow/dags/scripts
+      - ./data:/opt/airflow/data
+      - ./airflow/scripts:/opt/airflow/scripts 
+      - ./airflow/scripts/static:/opt/airflow/scripts/static
+    command: scheduler
+
+  airflow-init:
+    build: ./airflow
+    container_name: airflow-init
+    env_file: .env
+    depends_on:
+      - postgres
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - AIRFLOW__WEBSERVER__SECRET_KEY=G2ghFhQZICJCVxXHLQs35QvCGnfrzEpFn3gYZKq3T1A
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/scripts:/opt/airflow/dags/scripts
+      - ./data:/opt/airflow/data
+      - ./airflow/scripts:/opt/airflow/scripts 
+      - ./airflow/scripts/static:/opt/airflow/scripts/static
+    command: >
+      bash -c "
+        airflow db init &&
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com
+      "
+
+  flask-app:
+    env_file: .env
+    build: ./flask-dashboard
+    ports:
+      - "4500:4500"
+    volumes:
+      - ./flask-dashboard:/app
+      - ./airflow/scripts/static:/opt/airflow/scripts/static
+    restart: always
+
+volumes:
+  postgres-db-volume:

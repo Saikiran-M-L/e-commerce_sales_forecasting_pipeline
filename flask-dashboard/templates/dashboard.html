@@ -1,0 +1,91 @@
+<!-- templates/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forecast Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card:hover { transform: translateY(-3px); transition: all 0.3s ease; }
+        .header { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
+    </style>
+</head>
+<body>
+    <div class="header text-white py-4 mb-4">
+        <div class="container">
+            <h1 class="text-center">📊 Sales Forecast Dashboard</h1>
+            <p class="text-center mb-0">Predictive analytics for business planning</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- KPI Section -->
+        <div class="row mb-4 g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-3 bg-primary text-white">
+                    <h5>Total Forecast Value</h5>
+                    <h2>£{{ total_forecast }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-3 bg-success text-white">
+                    <h5>Avg Daily Sales</h5>
+                    <h2>£{{ avg_daily }}</h2>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-3 bg-info text-white">
+                    <h5>Forecast Period</h5>
+                    <h2>{{ forecast_days }} Days</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart and Download Section -->
+        <div class="card mb-4">
+            <!-- <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Forecast Visualization</h5>
+               <a class="btn btn-outline-secondary" href="/download">⬇️ Download CSV</a>
+            </div> -->
+            <div class="card-body">
+                <div id="forecast-chart"></div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Key Insights</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Sales began around £0.6M in January 2011 but dipped slightly by March 2011, suggesting a sluggish start to the year</li>
+                    <li>Between May and July 2011, sales hovered consistently, indicating a stable though not growing period.</li>
+                    <li>Starting September 2011, sales picked up momentum significantly, climbing toward the years peak.</li>
+                    <li>In January 2012, sales peaked at approximately £1.4M, more than doubling from the year's starting point.</li>
+                    <li>Post-January 2012, the graph reveals a sharp decline, hinting at possible market saturation, seasonal fluctuation, or supply chain challenges.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 py-3 text-center text-muted">
+        <div class="container">
+            <p>Forecast generated on {{ forecast_date }} | Confidence Level: 95%</p>
+        </div>
+    </footer>
+
+    <script>
+        // Parse and render Plotly chart
+        const graphData = JSON.parse('{{ graphJSON | safe }}');
+        Plotly.newPlot('forecast-chart', graphData.data, graphData.layout);
+        
+        // Add resize handler
+        window.addEventListener('resize', function() {
+            Plotly.Plots.resize('forecast-chart');
+        });
+    </script>
+</body>
+</html>
