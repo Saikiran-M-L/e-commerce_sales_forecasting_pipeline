@@ -1,0 +1,10 @@
+flask 
+pandas 
+plotly 
+pymongo 
+pymongo[srv] 
+python-dotenv
+gunicorn
+prophet
+scikit-learn
+joblib
