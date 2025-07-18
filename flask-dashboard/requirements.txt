@@ -7,3 +7,4 @@ gunicorn
 prophet
 scikit-learn
 joblib
+dnspython
